@@ -90,15 +90,21 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
       return
     }
     
-    // Add a small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      console.log("[v0] mapRef.current after delay:", mapRef.current ? "available" : "not available")
+    // Add a delay to ensure DOM is ready and try multiple times
+    const tryInitMap = (attempts = 0) => {
+      console.log("[v0] mapRef.current attempt", attempts + 1, ":", mapRef.current ? "available" : "not available")
       
       if (!mapRef.current) {
-        console.log("[v0] Map container still not ready, using fallback")
-        setUseFallback(true)
-        setIsMapLoading(false)
-        return
+        if (attempts < 5) {
+          // Try again after a short delay
+          setTimeout(() => tryInitMap(attempts + 1), 100)
+          return
+        } else {
+          console.log("[v0] Map container still not ready after 5 attempts, using fallback")
+          setUseFallback(true)
+          setIsMapLoading(false)
+          return
+        }
       }
 
       const initMap = () => {
@@ -206,9 +212,10 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
         }
         document.head.appendChild(script)
       }
-    }, 100) // Small delay to ensure DOM is ready
+    }
 
-    return () => clearTimeout(timer)
+    // Start trying to initialize the map
+    tryInitMap()
   }, [apiKey]) // Depend on apiKey instead of empty array
 
   useEffect(() => {

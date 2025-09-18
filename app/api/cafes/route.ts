@@ -1,11 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { mockCafes } from "@/lib/data/cafes"
 import { filterCafes, calculateDistance, isOpenNow } from "@/lib/utils/cafe-utils"
+import { GooglePlacesService } from "@/lib/services/google-places"
 import type { SearchFilters } from "@/lib/types"
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
     // Parse search filters from query parameters
     const filters: SearchFilters = {
@@ -26,7 +28,38 @@ export async function GET(request: NextRequest) {
           : undefined,
     }
 
-    let filteredCafes = filterCafes(mockCafes, filters)
+    let cafes = []
+
+    // Use Google Places API if API key is available and we have a location
+    if (apiKey && apiKey !== "YOUR_API_KEY_HERE" && filters.location) {
+      try {
+        const placesService = new GooglePlacesService(apiKey)
+        
+        // Search for cafes near the user's location
+        const places = await placesService.searchNearby(
+          filters.location,
+          (filters.distance || 10) * 1000, // Convert miles to meters
+          'cafe',
+          filters.query
+        )
+
+        // Convert Google Places to our Cafe format
+        cafes = places.map(place => placesService.convertToCafe(place, filters.location))
+        
+        console.log(`[API] Found ${cafes.length} cafes from Google Places API`)
+      } catch (error) {
+        console.error("Error fetching from Google Places API:", error)
+        // Fall back to mock data if Google Places fails
+        cafes = mockCafes
+      }
+    } else {
+      // Use mock data if no API key or location
+      console.log("[API] Using mock data - no API key or location provided")
+      cafes = mockCafes
+    }
+
+    // Apply additional filters
+    let filteredCafes = filterCafes(cafes, filters)
 
     // Filter by open now if requested
     if (filters.openNow) {
@@ -61,6 +94,7 @@ export async function GET(request: NextRequest) {
       cafes: filteredCafes,
       total: filteredCafes.length,
       filters: filters,
+      source: apiKey && apiKey !== "YOUR_API_KEY_HERE" && filters.location ? "google_places" : "mock_data"
     })
   } catch (error) {
     console.error("Error fetching cafes:", error)

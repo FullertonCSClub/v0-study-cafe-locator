@@ -24,6 +24,14 @@ export function MapExplorer({ filters, onFiltersChange }: MapExplorerProps) {
 
   const { cafes, isLoading, error } = useCafes(filters)
 
+  // Debug logging
+  useEffect(() => {
+    console.log("[v0] MapExplorer - Current filters:", filters)
+    console.log("[v0] MapExplorer - User location:", userLocation)
+    console.log("[v0] MapExplorer - Cafes count:", cafes.length)
+    console.log("[v0] MapExplorer - Loading:", isLoading)
+  }, [filters, userLocation, cafes.length, isLoading])
+
   // Get user location on mount
   useEffect(() => {
     if (navigator.geolocation) {

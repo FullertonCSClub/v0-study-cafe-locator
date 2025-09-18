@@ -75,7 +75,7 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
       })}
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg text-xs text-muted-foreground">
         <MapPin className="h-3 w-3 inline mr-1" />
-        Interactive map (demo mode)
+        Interactive map
       </div>
     </div>
   )

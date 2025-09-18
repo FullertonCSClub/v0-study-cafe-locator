@@ -58,3 +58,18 @@ export interface MapMarker {
   title: string
   cafeId: string
 }
+
+export interface SearchFilters {
+  query?: string
+  amenities?: string[]
+  priceLevel?: number[]
+  rating?: number
+  noiseLevel?: string[]
+  studyFriendly?: boolean
+  openNow?: boolean
+  distance?: number
+  location?: {
+    lat: number
+    lng: number
+  }
+}

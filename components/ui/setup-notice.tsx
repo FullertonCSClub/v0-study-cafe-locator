@@ -11,7 +11,7 @@ export function SetupNotice() {
 
   useEffect(() => {
     getGoogleMapsApiKey().then((apiKey) => {
-      setHasGoogleMapsKey(!!apiKey && apiKey !== "YOUR_API_KEY")
+      setHasGoogleMapsKey(!!apiKey && apiKey !== "YOUR_API_KEY_HERE")
     })
   }, [])
 

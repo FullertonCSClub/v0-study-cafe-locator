@@ -91,7 +91,7 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
 
         console.log("[v0] Using API key:", apiKey ? apiKey.substring(0, 10) + "..." : "not found")
 
-        if (!apiKey || apiKey === "YOUR_API_KEY") {
+        if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
           console.log(
             "[v0] Google Maps API key not configured. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.",
           )
@@ -163,7 +163,7 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
       initMap()
     } else {
       console.log("[v0] Loading Google Maps API...")
-      if (!apiKey || apiKey === "YOUR_API_KEY") {
+      if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
         console.log("[v0] No Google Maps API key found, using fallback")
         setUseFallback(true)
         setIsMapLoading(false)

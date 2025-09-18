@@ -18,7 +18,7 @@ export function CafeMap({ cafe }: CafeMapProps) {
     const initMap = () => {
       try {
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-        if (!apiKey || apiKey === "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY") {
+        if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
           console.log("[v0] No Google Maps API key, using fallback for cafe map")
           setUseFallback(true)
           return

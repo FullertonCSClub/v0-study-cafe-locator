@@ -23,11 +23,14 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
   const [mapError, setMapError] = useState<string | null>(null)
   const [isMapLoading, setIsMapLoading] = useState(true)
   const [useFallback, setUseFallback] = useState(false)
-  const [apiKey, setApiKey] = useState<string | null>(null)
+  const [apiKey, setApiKey] = useState<string | null>(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || null)
 
   useEffect(() => {
-    getGoogleMapsApiKey().then(setApiKey)
-  }, [])
+    // API key is already set from environment variable
+    if (!apiKey) {
+      getGoogleMapsApiKey().then(setApiKey)
+    }
+  }, [apiKey])
 
   const FallbackMap = () => (
     <div className="relative w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg overflow-hidden">
@@ -78,6 +81,8 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
 
   useEffect(() => {
     console.log("[v0] MapView useEffect triggered, userLocation:", userLocation)
+    console.log("[v0] API key status:", apiKey ? "loaded" : "not loaded")
+    console.log("[v0] API key value:", apiKey ? apiKey.substring(0, 10) + "..." : "none")
     if (!mapRef.current || !apiKey) {
       console.log("[v0] No mapRef.current or API key not loaded yet")
       return

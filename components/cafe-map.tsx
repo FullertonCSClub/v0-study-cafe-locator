@@ -31,13 +31,19 @@ export function CafeMap({ cafe }: CafeMapProps) {
         const map = new window.google.maps.Map(mapRef.current!, {
           center: { lat: cafe.latitude, lng: cafe.longitude },
           zoom: 15,
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }],
-            },
-          ],
+          mapTypeId: 'roadmap', // Use standard roadmap view
+          mapTypeControl: true, // Enable map type control
+          streetViewControl: true, // Enable street view control
+          fullscreenControl: true, // Enable fullscreen control
+          zoomControl: true, // Enable zoom control
+          // Remove custom styles to show full street detail
+          // styles: [
+          //   {
+          //     featureType: "poi",
+          //     elementType: "labels",
+          //     stylers: [{ visibility: "off" }],
+          //   },
+          // ],
         })
 
         new window.google.maps.Marker({

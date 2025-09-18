@@ -32,6 +32,7 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
     }
   }, [apiKey])
 
+
   const FallbackMap = () => (
     <div className="relative w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg overflow-hidden">
       <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fillRule=%22evenodd%22%3E%3Cg fill=%22%23e0e7ff%22 fillOpacity=%220.3%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
@@ -83,113 +84,128 @@ export function MapView({ cafes, selectedCafeId, onCafeSelect, userLocation, isL
     console.log("[v0] MapView useEffect triggered, userLocation:", userLocation)
     console.log("[v0] API key status:", apiKey ? "loaded" : "not loaded")
     console.log("[v0] API key value:", apiKey ? apiKey.substring(0, 10) + "..." : "none")
-    if (!mapRef.current || !apiKey) {
-      console.log("[v0] No mapRef.current or API key not loaded yet")
+    
+    if (!apiKey) {
+      console.log("[v0] API key not loaded yet")
       return
     }
-
-    const initMap = () => {
-      try {
-        console.log("[v0] Initializing Google Maps...")
-        setIsMapLoading(true)
-        setMapError(null)
-
-        console.log("[v0] Using API key:", apiKey ? apiKey.substring(0, 10) + "..." : "not found")
-
-        if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
-          console.log(
-            "[v0] Google Maps API key not configured. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.",
-          )
-          setUseFallback(true)
-          setIsMapLoading(false)
-          return
-        }
-
-        if (typeof window.google === "undefined" || !window.google.maps) {
-          console.log("[v0] Google Maps API not loaded yet")
-          throw new Error("Google Maps API not loaded")
-        }
-
-        console.log("[v0] Creating Google Maps instance...")
-        const mapCenter = { lat: 33.7175, lng: -117.8311 } // Always use a default center
-        console.log("[v0] Map center:", mapCenter)
-
-        const map = new window.google.maps.Map(mapRef.current!, {
-          center: mapCenter,
-          zoom: 12,
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }],
-            },
-          ],
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-        })
-
-        console.log("[v0] Google Maps instance created successfully")
-        mapInstanceRef.current = map
-
-        if (userLocation) {
-          console.log("[v0] Adding user location marker")
-          userMarkerRef.current = new window.google.maps.Marker({
-            position: userLocation,
-            map: map,
-            title: "Your Location",
-            icon: {
-              url:
-                "data:image/svg+xml;charset=UTF-8," +
-                encodeURIComponent(`
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="8" fill="#3b82f6" stroke="white" strokeWidth="2"/>
-                  <circle cx="12" cy="12" r="3" fill="white"/>
-                </svg>
-              `),
-              scaledSize: new window.google.maps.Size(24, 24),
-              anchor: new window.google.maps.Point(12, 12),
-            },
-          })
-        }
-
-        setIsMapLoading(false)
-        console.log("[v0] Map initialization complete")
-      } catch (error) {
-        console.error("[v0] Error initializing map:", error)
-        console.log("[v0] Falling back to demo map")
-        setUseFallback(true)
-        setIsMapLoading(false)
-      }
-    }
-
-    if (typeof window.google !== "undefined" && window.google.maps) {
-      console.log("[v0] Google Maps API already loaded")
-      initMap()
-    } else {
-      console.log("[v0] Loading Google Maps API...")
-      if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
-        console.log("[v0] No Google Maps API key found, using fallback")
+    
+    // Add a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      console.log("[v0] mapRef.current after delay:", mapRef.current ? "available" : "not available")
+      
+      if (!mapRef.current) {
+        console.log("[v0] Map container still not ready, using fallback")
         setUseFallback(true)
         setIsMapLoading(false)
         return
       }
 
-      const script = document.createElement("script")
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`
-      script.async = true
-      script.onload = () => {
-        console.log("[v0] Google Maps API loaded successfully")
+      const initMap = () => {
+        try {
+          console.log("[v0] Initializing Google Maps...")
+          setIsMapLoading(true)
+          setMapError(null)
+
+          console.log("[v0] Using API key:", apiKey ? apiKey.substring(0, 10) + "..." : "not found")
+
+          if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
+            console.log(
+              "[v0] Google Maps API key not configured. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.",
+            )
+            setUseFallback(true)
+            setIsMapLoading(false)
+            return
+          }
+
+          if (typeof window.google === "undefined" || !window.google.maps) {
+            console.log("[v0] Google Maps API not loaded yet")
+            throw new Error("Google Maps API not loaded")
+          }
+
+          console.log("[v0] Creating Google Maps instance...")
+          const mapCenter = { lat: 33.7175, lng: -117.8311 } // Always use a default center
+          console.log("[v0] Map center:", mapCenter)
+
+          const map = new window.google.maps.Map(mapRef.current!, {
+            center: mapCenter,
+            zoom: 12,
+            styles: [
+              {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }],
+              },
+            ],
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+          })
+
+          console.log("[v0] Google Maps instance created successfully")
+          mapInstanceRef.current = map
+
+          if (userLocation) {
+            console.log("[v0] Adding user location marker")
+            userMarkerRef.current = new window.google.maps.Marker({
+              position: userLocation,
+              map: map,
+              title: "Your Location",
+              icon: {
+                url:
+                  "data:image/svg+xml;charset=UTF-8," +
+                  encodeURIComponent(`
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="8" fill="#3b82f6" stroke="white" strokeWidth="2"/>
+                    <circle cx="12" cy="12" r="3" fill="white"/>
+                  </svg>
+                `),
+                scaledSize: new window.google.maps.Size(24, 24),
+                anchor: new window.google.maps.Point(12, 12),
+              },
+            })
+          }
+
+          setIsMapLoading(false)
+          console.log("[v0] Map initialization complete")
+        } catch (error) {
+          console.error("[v0] Error initializing map:", error)
+          console.log("[v0] Falling back to demo map")
+          setUseFallback(true)
+          setIsMapLoading(false)
+        }
+      }
+
+      if (typeof window.google !== "undefined" && window.google.maps) {
+        console.log("[v0] Google Maps API already loaded")
         initMap()
+      } else {
+        console.log("[v0] Loading Google Maps API...")
+        if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
+          console.log("[v0] No Google Maps API key found, using fallback")
+          setUseFallback(true)
+          setIsMapLoading(false)
+          return
+        }
+
+        const script = document.createElement("script")
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`
+        script.async = true
+        script.onload = () => {
+          console.log("[v0] Google Maps API loaded successfully")
+          initMap()
+        }
+        script.onerror = (error) => {
+          console.error("[v0] Failed to load Google Maps API:", error)
+          console.log("[v0] Using fallback map")
+          setUseFallback(true)
+          setIsMapLoading(false)
+        }
+        document.head.appendChild(script)
       }
-      script.onerror = (error) => {
-        console.error("[v0] Failed to load Google Maps API:", error)
-        console.log("[v0] Using fallback map")
-        setUseFallback(true)
-        setIsMapLoading(false)
-      }
-      document.head.appendChild(script)
-    }
+    }, 100) // Small delay to ensure DOM is ready
+
+    return () => clearTimeout(timer)
   }, [apiKey]) // Depend on apiKey instead of empty array
 
   useEffect(() => {

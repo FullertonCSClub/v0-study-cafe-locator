@@ -17,8 +17,8 @@ export function CafeMap({ cafe }: CafeMapProps) {
 
     const initMap = () => {
       try {
-        const apiKey = "AIzaSyBEpMRFVl2I8YF-6YcN9zlOlNvoB822pcc"
-        if (apiKey === "YOUR_API_KEY") {
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        if (!apiKey || apiKey === "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY") {
           console.log("[v0] No Google Maps API key, using fallback for cafe map")
           setUseFallback(true)
           return
@@ -67,8 +67,8 @@ export function CafeMap({ cafe }: CafeMapProps) {
     if (typeof window.google !== "undefined" && window.google.maps) {
       initMap()
     } else {
-      const apiKey = "AIzaSyBEpMRFVl2I8YF-6YcN9zlOlNvoB822pcc"
-      if (apiKey === "YOUR_API_KEY") {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
         setUseFallback(true)
         return
       }

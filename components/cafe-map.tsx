@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import type { Cafe } from "@/lib/types"
+import type { Cafe } from "../lib/types"
 import { MapPin } from "lucide-react"
 
 interface CafeMapProps {

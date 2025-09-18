@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import type { Cafe } from "@/lib/types"
+import type { Cafe } from "../lib/types"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { EmptyState } from "@/components/ui/empty-state"
 import { MapPin, AlertCircle } from "lucide-react"
